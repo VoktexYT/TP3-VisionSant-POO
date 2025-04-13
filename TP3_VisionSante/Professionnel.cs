@@ -8,6 +8,9 @@ internal class Professionnel
     public string? CodePS { get; set; }
     private string? TitreProfessionnel { get; set; }
     
+    public List<Citoyen> Patient { get; set; } = new List<Citoyen>();
+    public List<Intervention> Intervention { get; set; } = new List<Intervention>();
+
     public Professionnel(int nas, string nom, string dateNaissance, string codePS, string titreProfessionnel)
     {
         NAS = nas;

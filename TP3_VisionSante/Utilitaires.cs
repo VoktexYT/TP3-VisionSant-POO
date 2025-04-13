@@ -6,6 +6,7 @@ internal static class Utilitaires
 
     public static void EnTete()
     {
+        ViderEcran();
         string separateur = "o" + new string('-', TAILLE_TITRE - 2) + "o";
 
         Console.WriteLine(separateur);

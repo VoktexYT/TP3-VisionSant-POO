@@ -2,14 +2,14 @@ namespace Tp3_VisionSante;
 
 public class Hospitalisation
 {
-	int NAS {get; set;}
-	string CodePS {get; set;}
-	string Etablissement {get; set;}
-	string Date {get; set;}
+	public int NAS {get; set;}
+	private string CodePS {get; set;}
+	private string Etablissement {get; set;}
+	private string Date {get; set;}
 	
-	string DateFin {get; set;}
+	private string DateFin {get; set;}
 	
-	int Chambre {get; set;}
+	private int Chambre {get; set;}
 	
 	public Hospitalisation(int nas, string codePS, string etablissement, string date, string dateFin, int chambre)
 	{
@@ -19,5 +19,10 @@ public class Hospitalisation
 		Date = date;
 		DateFin = dateFin;
 		Chambre = chambre;
+	}
+
+	public void Afficher()
+	{
+		Console.WriteLine($"{Etablissement,-30}{Date,-12}{CodePS,-8}{Chambre,-8}{DateFin,-12}");
 	}
 }

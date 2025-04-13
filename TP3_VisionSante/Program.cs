@@ -10,24 +10,146 @@ internal static class Program
 
     private static List<RendezVous> _rendezVous = new List<RendezVous>();
     private static List<Hospitalisation> _hospitalisation = new List<Hospitalisation>();
+
+    private const int TAILLE_LIGNE_CITOYEN = 3;
+    private const int TAILLE_LIGNE_PROFESSIONNEL = 5;
+    
+    private const int TAILLE_LIGNE_BLESSURE = 5;
+    private const int TAILLE_LIGNE_MALADIE = 6;
+    
+    private const int TAILLE_LIGNE_RENDEZ_VOUS = 4;
+    private const int TAILLE_LIGNE_HOSPITALISATION = 6;
     
     private static void Main(string[] args)
     {
-        Console.WriteLine("Chargement de la base de données...");
-        
+        Console.WriteLine("Chargement de la base de données POPULATION");
         _RepartirPopulation();
+
+        Console.WriteLine("Chargement de la base de données PROBLEME");
         _RepartirProbleme();
+        
+        Console.WriteLine("Chargement de la base de données UTILISATION");
         _RepartirUtilisations();
+
+        Console.WriteLine("Mise a jour du dosser santé de chaque patient");
+        _RepartirProblemePatient();
+        
+        Console.WriteLine("Mise a jour du dosser ressource de chaque patient");
+        _RepartirUtilisationPatient();
+        
+        Console.WriteLine("Mise a jour du dosser professionnel de chaque professionnel");
+        _RepartirPatientAvecProfessionnel();
+        
         
         Utilitaires.ViderEcran();
-        
         Utilitaires.EnTete();
         
         Menu menu = new Menu("Profils offerts");
         menu.AjouterOption(new MenuItem('C', "Profil citoyen", ProfilCitoyen));
         menu.AjouterOption(new MenuItem('P', "Profil professionnel de la santé", ProfilProfessionnelSante));
+        menu.AjouterOption(new MenuItem('A', "Afficher professionnels de la santé", AfficherProfessionnel));
+        menu.AjouterOption(new MenuItem('B', "Afficher citoyens", AfficherCitoyen));
 
         menu.SaisirOption();
+    }
+
+    private static void AfficherProfessionnel()
+    {
+        foreach (var professionnel in _professionnels)
+        {
+            Console.Write($"[{professionnel.CodePS}] ");
+        }
+        
+        Utilitaires.Pause();
+    }
+    
+    private static void AfficherCitoyen()
+    {
+        foreach (var citoyen in _citoyens)
+        {
+            Console.Write($"[{citoyen.NAS,-4}] ");
+        }
+        Utilitaires.Pause();
+    }
+
+    private static void _RepartirPatientAvecProfessionnel()
+    {
+        var citoyensParNAS = 
+            _citoyens.ToDictionary(c => c.NAS);
+        
+        var professionnelsParCode = 
+            _professionnels.ToDictionary(p => p.CodePS);
+
+        foreach (RendezVous rv in _rendezVous)
+        {
+            if (citoyensParNAS.TryGetValue(rv.NAS, out var citoyen) 
+                && professionnelsParCode.TryGetValue(rv.CodePS, out var professionnel))
+            {
+                professionnel.Patient.Add(citoyen);
+            }
+        }
+    }
+
+    private static void _RepartirUtilisationPatient()
+    {
+        var hospitalisationsParNAS = 
+            _hospitalisation
+                .GroupBy(h => h.NAS)
+                .ToDictionary(g => g.Key, g => g.ToList());
+        
+        var rendezVousParNAS = 
+            _rendezVous
+                .GroupBy(r => r.NAS)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (Citoyen c in _citoyens)
+        {
+            int nas = c.NAS ?? -1;
+
+            if (nas != -1)
+            {
+                if (hospitalisationsParNAS.TryGetValue(nas, out var hosp))
+                {
+                    c.Hospitalisations.AddRange(hosp);
+                }
+
+                if (rendezVousParNAS.TryGetValue(nas, out var rvs))
+                {
+                    c.RendezVous_.AddRange(rvs);   
+                }
+            }
+        }
+    }
+
+    private static void _RepartirProblemePatient()
+    {
+        var blessuresParNas = 
+            _blessures
+                .GroupBy(b => b.NAS)
+                .ToDictionary(g => g.Key, g => g.ToList());
+        
+        var maladiesParNas = 
+            _maladies
+                .GroupBy(m => m.NAS)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (Citoyen c in _citoyens)
+        {
+            int nas = c.NAS ?? -1;
+            
+            if (nas != -1)
+            {
+                if (blessuresParNas.TryGetValue(nas, out var bls))
+                {
+                    c.Blessures.AddRange(bls);
+                }
+
+                if (maladiesParNas.TryGetValue(nas, out var mls))
+                {
+                    c.Maladies.AddRange(mls);
+                }
+            }
+        }
     }
 
     private static void _RepartirUtilisations()
@@ -43,20 +165,20 @@ internal static class Program
             string codePS = utilisation[1];
             string etablissement = utilisation[2];
             string date = utilisation[3];
-            
-            if (utilisation.Count == 4)
+
+            switch (utilisation.Count)
             {
-                RendezVous rendezVous = new RendezVous(NAS, codePS, etablissement, date);
-                _rendezVous.Add(rendezVous);
-            }
-            
-            else if (utilisation.Count == 6)
-            {
-                string dateFin = utilisation[4];
-                int chambre = int.Parse(utilisation[5]);
+                case TAILLE_LIGNE_RENDEZ_VOUS:
+                    RendezVous rendezVous = new RendezVous(NAS, codePS, etablissement, date);
+                    _rendezVous.Add(rendezVous);
+                    break;
                 
-                Hospitalisation hospitalisation = new Hospitalisation(NAS, codePS, etablissement, date, dateFin, chambre);
-                _hospitalisation.Add(hospitalisation);
+                case TAILLE_LIGNE_HOSPITALISATION:
+                    string dateFin = utilisation[4];
+                    int chambre = int.Parse(utilisation[5]);
+                    Hospitalisation hospitalisation = new Hospitalisation(NAS, codePS, etablissement, date, dateFin, chambre);
+                    _hospitalisation.Add(hospitalisation);
+                    break;
             }
         }
     }
@@ -70,25 +192,24 @@ internal static class Program
 
         foreach (List<string> probleme in listeProblemes)
         {
-            int NAS = int.Parse(probleme[0]);
+            if (probleme.Count != TAILLE_LIGNE_MALADIE && probleme.Count != TAILLE_LIGNE_BLESSURE) continue;
+            
+            int nas = int.Parse(probleme[0]);
             string typeOuPatologie = probleme[1];
             string dateDebut = probleme[2];
+            string dateFin = probleme[3];
+            string description = probleme[4];
 
-            if (probleme.Count == 5)
+            switch (probleme.Count)
             {
-                string description = probleme[3];
-                Blessure blessure = new Blessure(NAS, typeOuPatologie, dateDebut, description);
-                _blessures.Add(blessure);
-            }
-            
-            else if (probleme.Count == 6)
-            {
-                string dateFin = probleme[3];
-                string description = probleme[4];
-                int stade = int.Parse(probleme[5]);
+                case TAILLE_LIGNE_BLESSURE:
+                    _blessures.Add(new Blessure(nas, typeOuPatologie, dateDebut, dateFin, description));
+                    break;
                 
-                Maladie maladie = new Maladie(NAS, typeOuPatologie, dateDebut, dateFin, description, stade);
-                _maladies.Add(maladie);
+                case TAILLE_LIGNE_MALADIE:
+                    int stade = int.Parse(probleme[5]);
+                    _maladies.Add(new Maladie(nas, typeOuPatologie, dateDebut, dateFin, description, stade));
+                    break;
             }
         }
     }
@@ -102,23 +223,24 @@ internal static class Program
 
         foreach (List<string> population in listePopulation)
         {
-            int NAS = int.Parse(population[0]);
+            int nas = int.Parse(population[0]); 
             string nom = population[1];
             string dateNaissance = population[2];
             
-            if (population.Count == 3)
+            switch (population.Count)
             {
-                Citoyen citoyen = new Citoyen(NAS, nom, dateNaissance);
-                _citoyens.Add(citoyen);
-            }
-            
-            else if (population.Count == 5)
-            {
-                string codePS = population[3];
-                string titreProfessionnel = population[4];
+                case TAILLE_LIGNE_CITOYEN:
+                    Citoyen citoyen = new Citoyen(nas, population[1], dateNaissance);
+                    _citoyens.Add(citoyen);
+                    break;
+                
+                case TAILLE_LIGNE_PROFESSIONNEL:
+                    string codePS = population[3];
+                    string titreProfessionnel = population[4];
 
-                Professionnel professionnel = new Professionnel(NAS, nom, dateNaissance, codePS, titreProfessionnel);
-                _professionnels.Add(professionnel);
+                    Professionnel professionnel = new Professionnel(nas, nom, dateNaissance, codePS, titreProfessionnel);
+                    _professionnels.Add(professionnel);
+                    break;
             }
         }
     }
