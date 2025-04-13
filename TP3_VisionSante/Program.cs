@@ -1,4 +1,6 @@
-﻿namespace Tp3_VisionSante;
+﻿using System.Runtime.InteropServices.JavaScript;
+
+namespace Tp3_VisionSante;
 
 internal static class Program
 {
@@ -40,8 +42,12 @@ internal static class Program
         Console.WriteLine("Mise a jour du dosser professionnel de chaque professionnel");
         _RepartirPatientAvecProfessionnel();
         
+        Console.WriteLine("Mise a jour du dosser intervention de chaque professionnel");
+        _RepartirInterventionAvecProfessionnel();
+        
         
         Utilitaires.ViderEcran();
+
         Utilitaires.EnTete();
         
         Menu menu = new Menu("Profils offerts");
@@ -85,7 +91,32 @@ internal static class Program
             if (citoyensParNAS.TryGetValue(rv.NAS, out var citoyen) 
                 && professionnelsParCode.TryGetValue(rv.CodePS, out var professionnel))
             {
-                professionnel.Patient.Add(citoyen);
+                professionnel.Patients.Add(citoyen);
+            }
+        }
+    }
+    private static void _RepartirInterventionAvecProfessionnel()
+    {
+        var rendezVousParCodePS = 
+            _rendezVous
+                .GroupBy(rv => rv.CodePS)
+                .ToDictionary(g => g.Key, g => g.ToList());
+        
+        var hospitalisationParCodePS = 
+            _hospitalisation
+                .GroupBy(h => h.CodePS)
+                .ToDictionary(h => h.Key, g => g.ToList());
+        
+        foreach (Professionnel professionnel in _professionnels)
+        {
+            if (hospitalisationParCodePS.TryGetValue(professionnel.CodePS, out var hosp))
+            {
+                professionnel.Hospitalisations.AddRange(hosp);
+            }
+
+            if (rendezVousParCodePS.TryGetValue(professionnel.CodePS, out var rvs))
+            {
+                professionnel.RendezVous_.AddRange(rvs);   
             }
         }
     }

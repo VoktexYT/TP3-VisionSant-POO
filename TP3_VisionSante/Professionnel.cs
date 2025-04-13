@@ -8,8 +8,9 @@ internal class Professionnel
     public string? CodePS { get; set; }
     private string? TitreProfessionnel { get; set; }
     
-    public List<Citoyen> Patient { get; set; } = new List<Citoyen>();
-    public List<Intervention> Intervention { get; set; } = new List<Intervention>();
+    public List<Citoyen> Patients { get; set; } = new List<Citoyen>();
+    public List<RendezVous> RendezVous_ { get; set; } = new List<RendezVous>();
+    public List<Hospitalisation> Hospitalisations { get; set; } = new List<Hospitalisation>();
 
     public Professionnel(int nas, string nom, string dateNaissance, string codePS, string titreProfessionnel)
     {
@@ -19,7 +20,8 @@ internal class Professionnel
         CodePS = codePS;
         TitreProfessionnel = titreProfessionnel;
     }
-    public bool AfficherSommaire()
+    
+    public void AfficherSommaire()
     {
         Utilitaires.ViderEcran();
         Utilitaires.EnTete();
@@ -31,44 +33,38 @@ internal class Professionnel
         Console.WriteLine("\n------------------------------------------------------------------");
 
         Console.WriteLine("Historique");
-        Console.WriteLine("\t\t801 patients");
-        Console.WriteLine("\t\t2508 interventions");
+        Console.WriteLine($"\t\t{Patients.Count} patients");
+        Console.WriteLine($"\t\t{RendezVous_.Count + Hospitalisations.Count} interventions");
         Console.WriteLine("\n");
 
-        Menu menuPS = new Menu("Consulter patients ou interventions de Louise Décarie?", false);
-        menuPS.AjouterOption(new MenuItem('P', "Patients", AfficherPatients));
-        menuPS.AjouterOption(new MenuItem('I', "Interventions", AfficherInterventions));
-        menuPS.SaisirOption();
-
-        return true;
-     
+        Menu menuPs = new Menu($"Consulter patients ou interventions de {Nom}?", false);
+        menuPs.AjouterOption(new MenuItem('P', "Patients", AfficherPatients));
+        menuPs.AjouterOption(new MenuItem('I', "Interventions", AfficherInterventions));
+        menuPs.SaisirOption();
+        
+        Utilitaires.Pause();
     }
 
-
-
-    public void AfficherPatients()
+    private void AfficherPatients()
     {
-        Utilitaires.EnTete();
         AfficherOptionTri();
         SaisirOptionTri();
+        
         Utilitaires.ViderEcran();
 
         Utilitaires.EnTete();
-        Console.WriteLine("Patients de Louise Décarie");
+        Console.WriteLine($"Patients de {Nom}");
         Console.WriteLine("------------------------------------");
-        Console.WriteLine("{0,-30} {1,5}{2,12} {3,5}", "Nom", "NAS", "Naissance", " Nb Interv");
+        Console.WriteLine("{0,-30}{1,5}{2,12}{3,5}", "Nom", "NAS", "Naissance", " Nb Interv");
         Console.WriteLine("_________________________________________________________________________________");
-        Console.WriteLine("{0,-30} {1,5} {2,12} {3,5}", "Diane Lemay", "5231", "1964-07-01", "18");
-        Console.WriteLine("{0,-30} {1,5} {2,12} {3,5}", "Éric Brais", "4531", "1968-07-25", "3");
-        Console.WriteLine("{0,-30} {1,5} {2,12} {3,5}", "Frédériane Boulay", "7234", "1984-07-01", "1");
-        Console.WriteLine("{0,-30} {1,5} {2,12} {3,5}", "Mohamed Khadary", "6613", "1991-12-11", "2");
-        Console.WriteLine("{0,-30} {1,5} {2,12} {3,5}", "Koricot M'Jeda", "7801", "1993-04-30", "42");
-        Console.WriteLine("{0,-30} {1,5} {2,12} {3,5}", "Roslyn Hangemayd-Laramee", "8032", "2004-08-28", "9");
-        Utilitaires.Pause();
-       
+
+        foreach (Citoyen patient in Patients)
+        {
+            patient.AfficherCaracteristiques(10);
+        }
     }
 
-    public void AfficherInterventions()
+    private void AfficherInterventions()
     {
         Utilitaires.EnTete();
         AfficherOptionTriIntervention();
@@ -77,45 +73,53 @@ internal class Professionnel
 
         Utilitaires.EnTete();
 
-        Console.WriteLine("Interventions de Louise Décarie");
+        Console.WriteLine($"Interventions de {Nom}");
         Console.WriteLine("-----------------------------------------------------");
         Console.WriteLine("{0,-30} {1,4} {2,-12}   {3,-20}", "Patient", "NAS", "  Date", "Établissement");
         Console.WriteLine("________________________________________________________________________________");
-        Console.WriteLine("{0,-30} {1,4} {2,12}   {3,-20}", "Diane Lemay", "5231", "1980-01-15", "CLSC du Sud");
-        Console.WriteLine("{0,-30} {1,4} {2,12}   {3,-20}", "Diane Lemay", "5231", "1981-01-15", "CLSC du Sud");
-        Console.WriteLine("{0,-30} {1,4} {2,12}   {3,-20}", "Eric Brais", "4531", "1979-11-15", "CH de St-Jérôme");
-        Console.WriteLine("{0,-30} {1,4} {2,12}   {3,-20}", "Frédériane Boulay", "7234", "1999-09-15", "CLSC du Nord");
-        Console.WriteLine("{0,-30} {1,4} {2,12}   {3,-20}", "Koricot M'Jeda", "7801", "2003-09-15", "Clinique MTS");
-        Console.WriteLine("{0,-30} {1,4} {2,12}   {3,-20}", "Koricot M'Jeda", "7801", "2004-03-15", "Clinique MTS");
-        Console.WriteLine("{0,-30} {1,4} {2,12}   {3,-20}", "Koricot M'Jeda", "7801", "2004-09-23", "Clinique MTS");
-        Utilitaires.Pause();
+
+        foreach (RendezVous rendezVous in RendezVous_)
+        {
+            rendezVous.Afficher();
+        }
+
+        foreach (Hospitalisation hospitalisation in Hospitalisations) 
+        {
+            hospitalisation.Afficher();    
+        }
     }
 
 
-    private static string SaisirOptionTri()
+    private void SaisirOptionTri()
     {
         ConsoleKeyInfo keyInfo;
         AfficherOptionTri();
         string optionTri = "";
         keyInfo = Console.ReadKey(true);
-        switch (keyInfo.Key.ToString())
+        
+        switch (keyInfo.KeyChar)
         {
-            case "n":
-            case "N":
-            case "a":
-            case "A":
-            case "o":
-            case "O":
-            case "s":
-            case "S":
-                optionTri = "N";
-                return optionTri;
-            default:
-                return "quitter";
+            case 'n':
+                Patients.Sort(TrierCroissantPatientsNaissance);
+                break;
+            case 'N':
+                Patients.Sort(TrierDecroissantPatientsNaissance);
+                break;
+            case 'a':
+                Patients.Sort(TrierCroissantPatientsNAS); break;
+            case 'A':
+                Patients.Sort(TrierDecroissantPatientsNAS); break;
+            case 'o':
+                Patients.Sort(TrierCroissantPatientsNom); break;
+            case 'O':
+                Patients.Sort(TrierDecroissantPatientsNom); break;
+            case 's':
+            case 'S':
+                Patients.Sort(TrierCroissantPatientsNaissance); break;
         }
     }
 
-    private static string SaisirOptionTriIntervention()
+    private string SaisirOptionTriIntervention()
     {
         ConsoleKeyInfo keyInfo;
         AfficherOptionTriIntervention();
@@ -138,10 +142,10 @@ internal class Professionnel
         }
     }
 
-    private static void AfficherOptionTri()
+    private void AfficherOptionTri()
     {
         Utilitaires.EnTete();
-        Console.WriteLine("\t\t\tPatients de Louise Décarie triés par\n");
+        Console.WriteLine($"\t\t\tPatients de {Nom} triés par\n");
         Console.WriteLine("\t\t\tn-naissance .:");
         Console.WriteLine("\t\t\tN-Naissance :.");
         Console.WriteLine("\t\t\ta-nAS .:");
@@ -151,10 +155,10 @@ internal class Professionnel
         Console.WriteLine("\t\t\ts-sans tri");
     }
 
-    private static void AfficherOptionTriIntervention()
+    private void AfficherOptionTriIntervention()
     {
         Utilitaires.EnTete();
-        Console.WriteLine("\t\tInterventions de Louise Décarie triées par\n");
+        Console.WriteLine($"\t\tInterventions de {Nom} triées par\n");
         Console.WriteLine("\t\td-date .:");
         Console.WriteLine("\t\tD-Date :.");
         Console.WriteLine("\t\te-établissement .:");
@@ -164,5 +168,31 @@ internal class Professionnel
         Console.WriteLine("\t\tn-nom .:");
         Console.WriteLine("\t\tN-Nom :.");
         Console.WriteLine("\t\ts-sans tri");
+    }
+
+    private int TrierCroissantPatientsNaissance(Citoyen patient1, Citoyen patient2)
+    {
+         return DateTime.Compare(patient1.RecupererDateNaissance(), patient2.RecupererDateNaissance());
+    }
+    private int TrierDecroissantPatientsNaissance(Citoyen patient1, Citoyen patient2)
+    {
+        return DateTime.Compare(patient2.RecupererDateNaissance(), patient1.RecupererDateNaissance());
+    }
+    
+    private int TrierCroissantPatientsNAS(Citoyen patient1, Citoyen patient2)
+    {
+        return patient1.NAS > patient2.NAS ? 1 : patient1.NAS < patient2.NAS ? -1 : 0;
+    }
+    private int TrierDecroissantPatientsNAS(Citoyen patient1, Citoyen patient2)
+    {
+        return patient1.NAS > patient2.NAS ? -1 : patient1.NAS < patient2.NAS ? 1 : 0;
+    }
+    private int TrierCroissantPatientsNom(Citoyen patient1, Citoyen patient2)
+    {
+        return string.Compare(patient1.Nom, patient2.Nom);
+    }
+    private int TrierDecroissantPatientsNom(Citoyen patient1, Citoyen patient2)
+    {
+        return string.Compare(patient2.Nom, patient1.Nom);
     }
 }

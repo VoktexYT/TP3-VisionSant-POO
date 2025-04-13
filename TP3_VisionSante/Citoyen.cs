@@ -2,7 +2,7 @@
 internal class Citoyen
 {
     public int? NAS { get; set; }
-    private string Nom { get; set; }
+    public string Nom { get; set; }
     private string DateNaissance { get; set; }
     
     public List<Blessure> Blessures { get; set; } = new List<Blessure>();
@@ -17,6 +17,17 @@ internal class Citoyen
         NAS = nas;
         Nom = nom;
         DateNaissance = dateNaissance;
+    }
+
+    public void AfficherCaracteristiques(int nbInter)
+    {
+        Console.WriteLine($"{Nom,-30}{NAS,5}{DateNaissance,12}{nbInter,5}");
+    }
+
+    public DateTime RecupererDateNaissance()
+    {
+        string[] dn = DateNaissance.Split("-");
+        return new DateTime(int.Parse(dn[0]), int.Parse(dn[1]), int.Parse(dn[2]));
     }
     
     public void AfficherSommaire()

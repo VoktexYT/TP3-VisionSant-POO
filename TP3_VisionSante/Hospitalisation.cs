@@ -3,7 +3,7 @@ namespace Tp3_VisionSante;
 public class Hospitalisation
 {
 	public int NAS {get; set;}
-	private string CodePS {get; set;}
+	public string CodePS {get; set;}
 	private string Etablissement {get; set;}
 	private string Date {get; set;}
 	
