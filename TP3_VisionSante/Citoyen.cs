@@ -1,24 +1,28 @@
 ﻿namespace Tp3_VisionSante;
 internal class Citoyen
 {
-    private string? NAS { get; set; }
-
-    public Citoyen()
+    public int? NAS { get; set; }
+    private string Nom { get; set; }
+    private string DateNaissance { get; set; }
+    
+    public Citoyen(int nas, string nom, string dateNaissance)
     {
-        NAS = "";
+        NAS = nas;
+        Nom = nom;
+        DateNaissance = dateNaissance;
     }
     
     public void AfficherSommaire()
     {
-        Console.Write("NAS du citoyen désiré:");
-        NAS = Console.ReadLine();
-
         Console.WriteLine("\n------------------------------------------------------------------");
-        Console.WriteLine("Nom: \t\tPascale Bisonnette");
-        Console.WriteLine("Né le:\t\t1968-07-25");
-        Console.WriteLine("NAS:\t\t" + NAS);
+        Console.WriteLine($"Nom: \t\t{Nom}");
+        Console.WriteLine($"Né le:\t\t{DateNaissance}");
+        Console.WriteLine($"NAS:\t\t{NAS}");
         Console.WriteLine("\n------------------------------------------------------------------");
 
+        Utilitaires.Pause();
+        return;
+        
         Console.WriteLine("Historique");
         Console.WriteLine("\t8 problèmes");
         Console.WriteLine("\t9 ressources utilisées");

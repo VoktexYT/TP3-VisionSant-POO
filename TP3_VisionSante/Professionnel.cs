@@ -2,22 +2,28 @@
 
 internal class Professionnel
 {
-    public string? CodePS;
-
-    public Professionnel()
+    private int? NAS { get; set; }
+    private string? Nom { get; set; }
+    private string? DateNaissance { get; set; }
+    public string? CodePS { get; set; }
+    private string? TitreProfessionnel { get; set; }
+    
+    public Professionnel(int nas, string nom, string dateNaissance, string codePS, string titreProfessionnel)
     {
-        CodePS = "";
+        NAS = nas;
+        Nom = nom;
+        DateNaissance = dateNaissance;
+        CodePS = codePS;
+        TitreProfessionnel = titreProfessionnel;
     }
     public bool AfficherSommaire()
     {
-        Console.Write("Code PS du professionnel désiré:");
-        if (CodePS == "")
-            CodePS = Console.ReadLine();
-        
+        Utilitaires.ViderEcran();
         Utilitaires.EnTete();
+        
         Console.WriteLine("\n------------------------------------------------------------------");
-        Console.WriteLine("Nom: \t\tLouise Décarie, chirurgienne cardiaque");
-        Console.WriteLine("Né le:\t\t1969-11-15");
+        Console.WriteLine($"Nom: \t\t{Nom}, {TitreProfessionnel}");
+        Console.WriteLine($"Né le:\t\t{DateNaissance}");
         Console.WriteLine("Code PS:\t{0}", CodePS);
         Console.WriteLine("\n------------------------------------------------------------------");
 

@@ -29,17 +29,12 @@ internal static class Utilitaires
     }
     public static void Titre(string t, bool cls=true)
     {
-        string separateur = new string('-', t.Length);
-
         if (cls)
         {
             ViderEcran();
             EnTete();
         }
-
-        Console.WriteLine(separateur);
-        Console.WriteLine(t);
-        Console.WriteLine(separateur);
+        Console.WriteLine($"\n{t,20}");
     }
 
     public static char GetClefClavier()
@@ -56,9 +51,10 @@ internal static class Utilitaires
         }
     }
     
-    public static List<T> ChargerFichier<T>(string chemin, T typeValeur, char separateur, string nomFichier = "")
+    public static List<List<string>> ChargerFichier(string chemin, char separateur, string nomFichier = "")
     {
-        List<T> tousLesDonnees = new List<T>();
+        List<List<string>> tousLesDonnees = new List<List<string>>();
+        
         bool debug = nomFichier != "";
         int nbrDonnees = 0;
 
@@ -71,7 +67,15 @@ internal static class Utilitaires
             AfficherDebug($"Lecture du fichier '{nomFichier}'", debug);
             while (fichier.Peek() >= 1)
             {
-                fichier.ReadLine();
+                string? ligne = fichier.ReadLine();
+                
+                if (ligne != null)
+                {
+                    tousLesDonnees.Add(
+                        ligne.Split(separateur).ToList()
+                    );
+                }
+                
                 nbrDonnees++;
             }
             AfficherDebug($"{nbrDonnees} donnée(s) chargée(s) du fichier '{nomFichier}'", debug);
