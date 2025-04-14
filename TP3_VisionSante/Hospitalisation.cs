@@ -1,6 +1,6 @@
 namespace Tp3_VisionSante;
 
-public class Hospitalisation
+internal class Hospitalisation
 {
 	public int NAS {get; set;}
 	public string CodePS {get; set;}
@@ -24,5 +24,16 @@ public class Hospitalisation
 	public void Afficher()
 	{
 		Console.WriteLine($"{Etablissement,-30}{Date,-12}{CodePS,-8}{Chambre,-8}{DateFin,-12}");
+	}
+	
+	public void AfficherProfessionnel(List<Citoyen> patients)
+	{
+		foreach (Citoyen patient in patients)
+		{
+			if (patient.NAS == NAS)
+			{
+				Console.WriteLine($"{patient.Nom,-30}{NAS,-10}{Date,-12}{Etablissement,-20}");
+			}
+		}
 	}
 }

@@ -75,17 +75,17 @@ internal class Professionnel
 
         Console.WriteLine($"Interventions de {Nom}");
         Console.WriteLine("-----------------------------------------------------");
-        Console.WriteLine("{0,-30} {1,4} {2,-12}   {3,-20}", "Patient", "NAS", "  Date", "Établissement");
+        Console.WriteLine("{0,-30}{1,-10}{2,-12}{3,-20}", "Patient", "NAS", "  Date", "Établissement");
         Console.WriteLine("________________________________________________________________________________");
 
         foreach (RendezVous rendezVous in RendezVous_)
         {
-            rendezVous.Afficher();
+            rendezVous.AfficherProfessionnel(Patients);
         }
 
         foreach (Hospitalisation hospitalisation in Hospitalisations) 
         {
-            hospitalisation.Afficher();    
+            hospitalisation.AfficherProfessionnel(Patients);    
         }
     }
 
