@@ -48,6 +48,11 @@ internal static class Program
         
         Utilitaires.ViderEcran();
 
+        // PHY101
+        ProfilProfessionnelSante();
+
+        return;
+
         Utilitaires.EnTete();
         
         Menu menu = new Menu("Profils offerts");
@@ -186,7 +191,7 @@ internal static class Program
     private static void _RepartirUtilisations()
     {
         List<List<string>> listeUtilisations = Utilitaires.ChargerFichier(
-            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/utilisations.txt",
+            "C:\\Users\\Ubert Guertin\\Downloads\\TP3-VisionSant-POO-main\\TP3_VisionSante\\donnees\\utilisations.txt",
             ';'
         );
 
@@ -217,7 +222,7 @@ internal static class Program
     private static void _RepartirProbleme()
     {
         List<List<string>> listeProblemes = Utilitaires.ChargerFichier(
-            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/problemes.txt",
+            "C:\\Users\\Ubert Guertin\\Downloads\\TP3-VisionSant-POO-main\\TP3_VisionSante\\donnees\\problemes.txt",
             ';'
         );
 
@@ -248,7 +253,7 @@ internal static class Program
     private static void _RepartirPopulation()
     {
         List<List<string>> listePopulation = Utilitaires.ChargerFichier(
-            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/population.txt",
+            "C:\\Users\\Ubert Guertin\\Downloads\\TP3-VisionSant-POO-main\\TP3_VisionSante\\donnees\\population.txt",
             ';'
         );
 
@@ -299,7 +304,9 @@ internal static class Program
         
         Console.Write("Code PS du professionnel désiré: ");
         string codePS = Console.ReadLine();
-        
+        //string codePS = ""
+
+
         foreach (Professionnel professionnel in _professionnels)
         {
             if (professionnel.CodePS == codePS)

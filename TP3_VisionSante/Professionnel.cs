@@ -7,10 +7,12 @@ internal class Professionnel
     private string? DateNaissance { get; set; }
     public string? CodePS { get; set; }
     private string? TitreProfessionnel { get; set; }
-    
+
     public List<Citoyen> Patients { get; set; } = new List<Citoyen>();
     public List<RendezVous> RendezVous_ { get; set; } = new List<RendezVous>();
     public List<Hospitalisation> Hospitalisations { get; set; } = new List<Hospitalisation>();
+
+    public List<Intervention> Interventions { get; set; } = new List<Intervention> { };
 
     public Professionnel(int nas, string nom, string dateNaissance, string codePS, string titreProfessionnel)
     {
@@ -20,12 +22,12 @@ internal class Professionnel
         CodePS = codePS;
         TitreProfessionnel = titreProfessionnel;
     }
-    
+
     public void AfficherSommaire()
     {
         Utilitaires.ViderEcran();
         Utilitaires.EnTete();
-        
+
         Console.WriteLine("\n------------------------------------------------------------------");
         Console.WriteLine($"Nom: \t\t{Nom}, {TitreProfessionnel}");
         Console.WriteLine($"Né le:\t\t{DateNaissance}");
@@ -41,7 +43,7 @@ internal class Professionnel
         menuPs.AjouterOption(new MenuItem('P', "Patients", AfficherPatients));
         menuPs.AjouterOption(new MenuItem('I', "Interventions", AfficherInterventions));
         menuPs.SaisirOption();
-        
+
         Utilitaires.Pause();
     }
 
@@ -49,7 +51,7 @@ internal class Professionnel
     {
         AfficherOptionTri();
         SaisirOptionTri();
-        
+
         Utilitaires.ViderEcran();
 
         Utilitaires.EnTete();
@@ -78,14 +80,9 @@ internal class Professionnel
         Console.WriteLine("{0,-30}{1,-10}{2,-12}{3,-20}", "Patient", "NAS", "  Date", "Établissement");
         Console.WriteLine("________________________________________________________________________________");
 
-        foreach (RendezVous rendezVous in RendezVous_)
+        foreach (Intervention intervention in Interventions)
         {
-            rendezVous.AfficherProfessionnel(Patients);
-        }
-
-        foreach (Hospitalisation hospitalisation in Hospitalisations) 
-        {
-            hospitalisation.AfficherProfessionnel(Patients);    
+            intervention.AfficherProfessionnel(Patients);
         }
     }
 
@@ -96,7 +93,7 @@ internal class Professionnel
         AfficherOptionTri();
         string optionTri = "";
         keyInfo = Console.ReadKey(true);
-        
+
         switch (keyInfo.KeyChar)
         {
             case 'n':
@@ -119,26 +116,34 @@ internal class Professionnel
         }
     }
 
-    private string SaisirOptionTriIntervention()
+    private void SaisirOptionTriIntervention()
     {
         ConsoleKeyInfo keyInfo;
         AfficherOptionTriIntervention();
-        string optionTri = "";
         keyInfo = Console.ReadKey(true);
-        switch (keyInfo.Key.ToString())
+
+        Interventions.Clear();
+        Interventions.AddRange(RendezVous_);
+        Interventions.AddRange(Hospitalisations);
+
+
+        switch (keyInfo.KeyChar)
         {
-            case "d":
-            case "D":
-            case "e":
-            case "E":
-            case "n":
-            case "N":
-            case "s":
-            case "S":
-                optionTri = "N";
-                return optionTri;
-            default:
-                return "quitter";
+            case 'd':
+                Interventions.Sort(TrierCroissantInterventionDate); break;
+            case 'D':
+                Interventions.Sort(TrierDecroissantInterventionDate); break;
+            case 'e':
+                Interventions.Sort(TrierCroissantInterventionEtablissement); break;
+            case 'E':
+                Interventions.Sort(TrierDecroissantInterventionEtablissement); break;
+            case 'n':
+                Interventions.Sort(TrierCroissantInterventionNas); break;
+            case 'N':
+                Interventions.Sort(TrierDecroissantInterventionNas); break;
+            case 's':
+            case 'S':
+                Interventions.Sort(TrierDecroissantInterventionNas); break;
         }
     }
 
@@ -170,15 +175,45 @@ internal class Professionnel
         Console.WriteLine("\t\ts-sans tri");
     }
 
+    private int TrierCroissantInterventionDate(Intervention int1, Intervention int2)
+    {
+        return DateTime.Compare(int1.Date, int2.Date);
+    }
+
+    private int TrierDecroissantInterventionDate(Intervention int1, Intervention int2)
+    {
+        return DateTime.Compare(int2.Date, int1.Date);
+    }
+
+    private int TrierCroissantInterventionEtablissement(Intervention int1, Intervention int2)
+    {
+        return string.Compare(int1.Etablissement, int2.Etablissement);
+    }
+
+    private int TrierDecroissantInterventionEtablissement(Intervention int1, Intervention int2)
+    {
+        return string.Compare(int2.Etablissement, int1.Etablissement);
+    }
+
+    private int TrierCroissantInterventionNas(Intervention int1, Intervention int2)
+    {
+        return int1.NAS > int2.NAS ? 1 : int1.NAS < int2.NAS ? -1 : 0;
+    }
+
+    private int TrierDecroissantInterventionNas(Intervention int1, Intervention int2)
+    {
+        return int1.NAS > int2.NAS ? -1 : int1.NAS < int2.NAS ? 1 : 0;
+    }
+
     private int TrierCroissantPatientsNaissance(Citoyen patient1, Citoyen patient2)
     {
-         return DateTime.Compare(patient1.RecupererDateNaissance(), patient2.RecupererDateNaissance());
+        return DateTime.Compare(patient1.RecupererDateNaissance(), patient2.RecupererDateNaissance());
     }
     private int TrierDecroissantPatientsNaissance(Citoyen patient1, Citoyen patient2)
     {
         return DateTime.Compare(patient2.RecupererDateNaissance(), patient1.RecupererDateNaissance());
     }
-    
+
     private int TrierCroissantPatientsNAS(Citoyen patient1, Citoyen patient2)
     {
         return patient1.NAS > patient2.NAS ? 1 : patient1.NAS < patient2.NAS ? -1 : 0;

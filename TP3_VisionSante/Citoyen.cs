@@ -74,8 +74,8 @@ internal class Citoyen
     {
         Utilitaires.EnTete();
         Console.WriteLine($"\n\nRessources utilisées par {Nom}\n----------------------------------------\n");
-        Console.WriteLine("\t3 rendez-vous");
-        Console.WriteLine("\t2 hospitalisations");
+        Console.WriteLine($"\t{RendezVous_.Count} rendez-vous");
+        Console.WriteLine($"\t{Hospitalisations.Count} hospitalisations");
 
         Console.WriteLine("\n");
 
