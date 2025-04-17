@@ -1,6 +1,13 @@
-namespace Tp3_VisionSante;
+// ----------------------
+// Intervention.cs
+// Ubert Guertin
+// TP3 Vision Santé
+// 2025-04-17
+// ----------------------
 
-internal abstract class Intervention
+namespace TP3_VisionSante;
+
+internal abstract class Intervention : Utilitaires.MethodeAfficherObligatoire
 {
     public int NAS { get; set; }
     public string CodePS { get; set; }
@@ -20,7 +27,10 @@ internal abstract class Intervention
         Date = new DateTime(int.Parse(d[0]), int.Parse(d[1]), int.Parse(d[2]));
     }
 
-    public extern virtual void Afficher();
+    public virtual void Afficher()
+    {
+        Console.WriteLine($"{NAS} {CodePS} {Etablissement} {DateStr}");
+    }
 
     public string RecupererPatientNom(List<Citoyen> patients)
     {

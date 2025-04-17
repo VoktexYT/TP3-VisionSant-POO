@@ -1,4 +1,4 @@
-﻿namespace Tp3_VisionSante;
+﻿namespace TP3_VisionSante;
 
 internal class Menu
 {

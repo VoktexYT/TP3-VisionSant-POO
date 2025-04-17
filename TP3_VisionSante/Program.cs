@@ -1,321 +1,364 @@
-﻿using System.Runtime.InteropServices.JavaScript;
+﻿// ----------------------
+// Program.cs
+// Ubert Guertin
+// TP3 Vision Santé
+// 2025-04-17
+// ----------------------
 
-namespace Tp3_VisionSante;
-
-internal static class Program
+namespace TP3_VisionSante
 {
-    private static List<Citoyen> _citoyens = new List<Citoyen>();
-    private static List<Professionnel> _professionnels = new List<Professionnel>();
-    
-    private static List<Blessure> _blessures = new List<Blessure>();
-    private static List<Maladie> _maladies = new List<Maladie>();
-
-    private static List<RendezVous> _rendezVous = new List<RendezVous>();
-    private static List<Hospitalisation> _hospitalisation = new List<Hospitalisation>();
-
-    private const int TAILLE_LIGNE_CITOYEN = 3;
-    private const int TAILLE_LIGNE_PROFESSIONNEL = 5;
-    
-    private const int TAILLE_LIGNE_BLESSURE = 5;
-    private const int TAILLE_LIGNE_MALADIE = 6;
-    
-    private const int TAILLE_LIGNE_RENDEZ_VOUS = 4;
-    private const int TAILLE_LIGNE_HOSPITALISATION = 6;
-    
-    private static void Main(string[] args)
+    /// <summary>
+    /// Classe principale du programme VisionSanté.
+    /// Gère le cycle de vie principal de l'application et le chargement des données.
+    /// </summary>
+    internal static class Program
     {
-        Console.WriteLine("Chargement de la base de données POPULATION");
-        _RepartirPopulation();
+        // Données principales du système
+        private static readonly List<Citoyen> _citoyens = new();
+        private static readonly List<Professionnel> _professionnels = new();
+        private static readonly List<Blessure> _blessures = new();
+        private static readonly List<Maladie> _maladies = new();
+        private static readonly List<RendezVous> _rendezVous = new();
+        private static readonly List<Hospitalisation> _hospitalisation = new();
 
-        Console.WriteLine("Chargement de la base de données PROBLEME");
-        _RepartirProbleme();
-        
-        Console.WriteLine("Chargement de la base de données UTILISATION");
-        _RepartirUtilisations();
+        // Tailles des lignes attendues dans les fichiers
+        private const int _TAILLE_LIGNE_CITOYEN = 3;
+        private const int _TAILLE_LIGNE_PROFESSIONNEL = 5;
+        private const int _TAILLE_LIGNE_BLESSURE = 5;
+        private const int _TAILLE_LIGNE_MALADIE = 6;
+        private const int _TAILLE_LIGNE_RENDEZ_VOUS = 4;
+        private const int _TAILLE_LIGNE_HOSPITALISATION = 6;
 
-        Console.WriteLine("Mise a jour du dosser santé de chaque patient");
-        _RepartirProblemePatient();
-        
-        Console.WriteLine("Mise a jour du dosser ressource de chaque patient");
-        _RepartirUtilisationPatient();
-        
-        Console.WriteLine("Mise a jour du dosser professionnel de chaque professionnel");
-        _RepartirPatientAvecProfessionnel();
-        
-        Console.WriteLine("Mise a jour du dosser intervention de chaque professionnel");
-        _RepartirInterventionAvecProfessionnel();
-        
-        
-        Utilitaires.ViderEcran();
+        // Chemins vers les fichiers de données
+        private const string _CHEMIN_FICHIER_POPULATION =
+            "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\population.txt";
 
-        // PHY101
-        ProfilProfessionnelSante();
+        private const string _CHEMIN_FICHIER_PROBLEMES =
+            "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\problemes.txt";
 
-        return;
+        private const string _CHEMIN_FICHIER_UTILISATIONS =
+            "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\utilisations.txt";
 
-        Utilitaires.EnTete();
-        
-        Menu menu = new Menu("Profils offerts");
-        menu.AjouterOption(new MenuItem('C', "Profil citoyen", ProfilCitoyen));
-        menu.AjouterOption(new MenuItem('P', "Profil professionnel de la santé", ProfilProfessionnelSante));
-        menu.AjouterOption(new MenuItem('A', "Afficher professionnels de la santé", AfficherProfessionnel));
-        menu.AjouterOption(new MenuItem('B', "Afficher citoyens", AfficherCitoyen));
+        private const char _SEPARATEUR_FICHIER_DONNEES = ';';
 
-        menu.SaisirOption();
-    }
-
-    private static void AfficherProfessionnel()
-    {
-        foreach (var professionnel in _professionnels)
+        /// <summary>
+        /// Point d'entrée principal de l'application.
+        /// Charge les données et affiche le menu principal.
+        /// </summary>
+        /// <param name="args">Arguments de la ligne de commande (non utilisés).</param>
+        private static void Main(string[] args)
         {
-            Console.Write($"[{professionnel.CodePS}] ");
+            MettreAJourDonnees();
+            AfficherMenuIntroduction();
         }
-        
-        Utilitaires.Pause();
-    }
-    
-    private static void AfficherCitoyen()
-    {
-        foreach (var citoyen in _citoyens)
+
+        /// <summary>
+        /// Affiche le menu principal permettant de naviguer dans les profils.
+        /// </summary>
+        private static void AfficherMenuIntroduction()
         {
-            Console.Write($"[{citoyen.NAS,-4}] ");
+            Utilitaires.EnTete();
+
+            Menu menu = new Menu("Profils offerts");
+            menu.AjouterOption(new MenuItem('C', "Profil citoyen", _ProfilCitoyen));
+            menu.AjouterOption(new MenuItem('P', "Profil professionnel de la santé", _ProfilProfessionnelSante));
+            menu.AjouterOption(new MenuItem('A', "Afficher professionnels de la santé", AfficherProfessionnel));
+            menu.AjouterOption(new MenuItem('B', "Afficher citoyens", AfficherCitoyen));
+
+            menu.SaisirOption();
         }
-        Utilitaires.Pause();
-    }
 
-    private static void _RepartirPatientAvecProfessionnel()
-    {
-        var citoyensParNAS = 
-            _citoyens.ToDictionary(c => c.NAS);
-        
-        var professionnelsParCode = 
-            _professionnels.ToDictionary(p => p.CodePS);
-
-        foreach (RendezVous rv in _rendezVous)
+        /// <summary>
+        /// Met à jour l'ensemble des données à partir des fichiers.
+        /// </summary>
+        private static void MettreAJourDonnees()
         {
-            if (citoyensParNAS.TryGetValue(rv.NAS, out var citoyen) 
-                && professionnelsParCode.TryGetValue(rv.CodePS, out var professionnel))
+            Console.WriteLine("Chargement de la base de données POPULATION");
+            _RepartirPopulation();
+
+            Console.WriteLine("Chargement de la base de données PROBLEME");
+            _RepartirProbleme();
+
+            Console.WriteLine("Chargement de la base de données UTILISATION");
+            _RepartirUtilisations();
+
+            Console.WriteLine("Mise à jour du dossier santé de chaque patient");
+            _RepartirProblemePatient();
+
+            Console.WriteLine("Mise a jour du dossier ressource de chaque patient");
+            _RepartirUtilisationPatient();
+
+            Console.WriteLine("Mise à jour du dossier professionnel de chaque professionnel");
+            _RepartirPatientAvecProfessionnel();
+
+            Console.WriteLine("Mise à jour du dossier intervention de chaque professionnel");
+            _RepartirInterventionAvecProfessionnel();
+
+            Utilitaires.ViderEcran();
+        }
+
+        /// <summary>
+        /// Affiche les codes PS de tous les professionnels.
+        /// </summary>
+        private static void AfficherProfessionnel()
+        {
+            foreach (var professionnel in _professionnels)
             {
-                professionnel.Patients.Add(citoyen);
+                Console.Write($"[{professionnel.CodePS}] ");
+            }
+
+            Utilitaires.Pause();
+        }
+
+        /// <summary>
+        /// Affiche les NAS de tous les citoyens.
+        /// </summary>
+        private static void AfficherCitoyen()
+        {
+            foreach (var citoyen in _citoyens)
+            {
+                Console.Write($"[{citoyen.NAS,-4}] ");
+            }
+
+            Utilitaires.Pause();
+        }
+
+        /// <summary>
+        /// Associe chaque patient à son ou ses professionnels de la santé via les rendez-vous.
+        /// </summary>
+        private static void _RepartirPatientAvecProfessionnel()
+        {
+            var citoyensParNAS = _citoyens.ToDictionary(c => c.NAS);
+            var professionnelsParCode = _professionnels.ToDictionary(p => p.CodePS);
+
+            foreach (RendezVous rv in _rendezVous)
+            {
+                if (citoyensParNAS.TryGetValue(rv.NAS, out var citoyen)
+                    && professionnelsParCode.TryGetValue(rv.CodePS, out var professionnel))
+                {
+                    professionnel.Patients.Add(citoyen);
+                }
             }
         }
-    }
-    private static void _RepartirInterventionAvecProfessionnel()
-    {
-        var rendezVousParCodePS = 
-            _rendezVous
+
+        /// <summary>
+        /// Associe les interventions (rendez-vous, hospitalisations) aux professionnels concernés.
+        /// </summary>
+        private static void _RepartirInterventionAvecProfessionnel()
+        {
+            var rendezVousParCodePS = _rendezVous
                 .GroupBy(rv => rv.CodePS)
                 .ToDictionary(g => g.Key, g => g.ToList());
-        
-        var hospitalisationParCodePS = 
-            _hospitalisation
+
+            var hospitalisationParCodePS = _hospitalisation
                 .GroupBy(h => h.CodePS)
                 .ToDictionary(h => h.Key, g => g.ToList());
-        
-        foreach (Professionnel professionnel in _professionnels)
-        {
-            if (hospitalisationParCodePS.TryGetValue(professionnel.CodePS, out var hosp))
-            {
-                professionnel.Hospitalisations.AddRange(hosp);
-            }
 
-            if (rendezVousParCodePS.TryGetValue(professionnel.CodePS, out var rvs))
+            foreach (Professionnel professionnel in _professionnels)
             {
-                professionnel.RendezVous_.AddRange(rvs);   
+                if (hospitalisationParCodePS.TryGetValue(professionnel.CodePS, out var hosp))
+                {
+                    professionnel.Hospitalisations.AddRange(hosp);
+                }
+
+                if (rendezVousParCodePS.TryGetValue(professionnel.CodePS, out var rvs))
+                {
+                    professionnel.RendezVous_.AddRange(rvs);
+                }
             }
         }
-    }
 
-    private static void _RepartirUtilisationPatient()
-    {
-        var hospitalisationsParNAS = 
-            _hospitalisation
+        /// <summary>
+        /// Associe les utilisations des ressources (rendez-vous, hospitalisations) à chaque citoyen.
+        /// </summary>
+        private static void _RepartirUtilisationPatient()
+        {
+            var hospitalisationsParNAS = _hospitalisation
                 .GroupBy(h => h.NAS)
                 .ToDictionary(g => g.Key, g => g.ToList());
-        
-        var rendezVousParNAS = 
-            _rendezVous
+
+            var rendezVousParNAS = _rendezVous
                 .GroupBy(r => r.NAS)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-        foreach (Citoyen c in _citoyens)
-        {
-            int nas = c.NAS ?? -1;
-
-            if (nas != -1)
+            foreach (Citoyen c in _citoyens)
             {
-                if (hospitalisationsParNAS.TryGetValue(nas, out var hosp))
-                {
-                    c.Hospitalisations.AddRange(hosp);
-                }
+                int nas = c.NAS ?? -1;
 
-                if (rendezVousParNAS.TryGetValue(nas, out var rvs))
+                if (nas != -1)
                 {
-                    c.RendezVous_.AddRange(rvs);   
-                }
-            }
-        }
-    }
+                    if (hospitalisationsParNAS.TryGetValue(nas, out var hosp))
+                    {
+                        c.Hospitalisations.AddRange(hosp);
+                    }
 
-    private static void _RepartirProblemePatient()
-    {
-        var blessuresParNas = 
-            _blessures
-                .GroupBy(b => b.NAS)
-                .ToDictionary(g => g.Key, g => g.ToList());
-        
-        var maladiesParNas = 
-            _maladies
-                .GroupBy(m => m.NAS)
-                .ToDictionary(g => g.Key, g => g.ToList());
-
-        foreach (Citoyen c in _citoyens)
-        {
-            int nas = c.NAS ?? -1;
-            
-            if (nas != -1)
-            {
-                if (blessuresParNas.TryGetValue(nas, out var bls))
-                {
-                    c.Blessures.AddRange(bls);
-                }
-
-                if (maladiesParNas.TryGetValue(nas, out var mls))
-                {
-                    c.Maladies.AddRange(mls);
+                    if (rendezVousParNAS.TryGetValue(nas, out var rvs))
+                    {
+                        c.RendezVous_.AddRange(rvs);
+                    }
                 }
             }
         }
-    }
 
-    private static void _RepartirUtilisations()
-    {
-        List<List<string>> listeUtilisations = Utilitaires.ChargerFichier(
-            "C:\\Users\\Ubert Guertin\\Downloads\\TP3-VisionSant-POO-main\\TP3_VisionSante\\donnees\\utilisations.txt",
-            ';'
-        );
-
-        foreach (List<string> utilisation in listeUtilisations)
+        /// <summary>
+        /// Associe les problèmes de santé (blessures, maladies) à chaque citoyen.
+        /// </summary>
+        private static void _RepartirProblemePatient()
         {
-            int NAS = int.Parse(utilisation[0]);
-            string codePS = utilisation[1];
-            string etablissement = utilisation[2];
-            string date = utilisation[3];
+            var blessuresParNas = _blessures.GroupBy(b => b.NAS).ToDictionary(g => g.Key, g => g.ToList());
+            var maladiesParNas = _maladies.GroupBy(m => m.NAS).ToDictionary(g => g.Key, g => g.ToList());
 
-            switch (utilisation.Count)
+            foreach (Citoyen c in _citoyens)
             {
-                case TAILLE_LIGNE_RENDEZ_VOUS:
-                    RendezVous rendezVous = new RendezVous(NAS, codePS, etablissement, date);
-                    _rendezVous.Add(rendezVous);
-                    break;
-                
-                case TAILLE_LIGNE_HOSPITALISATION:
-                    string dateFin = utilisation[4];
-                    int chambre = int.Parse(utilisation[5]);
-                    Hospitalisation hospitalisation = new Hospitalisation(NAS, codePS, etablissement, date, dateFin, chambre);
-                    _hospitalisation.Add(hospitalisation);
-                    break;
+                int nas = c.NAS ?? -1;
+
+                if (nas != -1)
+                {
+                    if (blessuresParNas.TryGetValue(nas, out var bls))
+                    {
+                        c.Blessures.AddRange(bls);
+                    }
+
+                    if (maladiesParNas.TryGetValue(nas, out var mls))
+                    {
+                        c.Maladies.AddRange(mls);
+                    }
+                }
             }
         }
-    }
 
-    private static void _RepartirProbleme()
-    {
-        List<List<string>> listeProblemes = Utilitaires.ChargerFichier(
-            "C:\\Users\\Ubert Guertin\\Downloads\\TP3-VisionSant-POO-main\\TP3_VisionSante\\donnees\\problemes.txt",
-            ';'
-        );
-
-        foreach (List<string> probleme in listeProblemes)
+        /// <summary>
+        /// Lit les données d'utilisation depuis un fichier et crée les objets correspondants (rendez-vous ou hospitalisations).
+        /// </summary>
+        private static void _RepartirUtilisations()
         {
-            if (probleme.Count != TAILLE_LIGNE_MALADIE && probleme.Count != TAILLE_LIGNE_BLESSURE) continue;
-            
-            int nas = int.Parse(probleme[0]);
-            string typeOuPatologie = probleme[1];
-            string dateDebut = probleme[2];
-            string dateFin = probleme[3];
-            string description = probleme[4];
+            List<List<string>> listeUtilisations = Utilitaires.ChargerFichier(_CHEMIN_FICHIER_UTILISATIONS, _SEPARATEUR_FICHIER_DONNEES);
 
-            switch (probleme.Count)
+            foreach (List<string> utilisation in listeUtilisations)
             {
-                case TAILLE_LIGNE_BLESSURE:
-                    _blessures.Add(new Blessure(nas, typeOuPatologie, dateDebut, dateFin, description));
-                    break;
-                
-                case TAILLE_LIGNE_MALADIE:
-                    int stade = int.Parse(probleme[5]);
-                    _maladies.Add(new Maladie(nas, typeOuPatologie, dateDebut, dateFin, description, stade));
-                    break;
+                (int nas, string codePS, string etablissement, string date) =
+                (int.Parse(utilisation[0]), utilisation[1], utilisation[2], utilisation[3]);
+
+                switch (utilisation.Count)
+                {
+                    case _TAILLE_LIGNE_RENDEZ_VOUS:
+                        RendezVous rendezVous = new RendezVous(nas, codePS, etablissement, date);
+                        _rendezVous.Add(rendezVous);
+                        break;
+
+                    case _TAILLE_LIGNE_HOSPITALISATION:
+                        (string dateFin, int noChambre) = (utilisation[4], int.Parse(utilisation[5]));
+                        Hospitalisation hospitalisation = new Hospitalisation(nas, codePS, etablissement, date, dateFin, noChambre);
+                        _hospitalisation.Add(hospitalisation);
+                        break;
+                }
             }
         }
-    }
-    
-    private static void _RepartirPopulation()
-    {
-        List<List<string>> listePopulation = Utilitaires.ChargerFichier(
-            "C:\\Users\\Ubert Guertin\\Downloads\\TP3-VisionSant-POO-main\\TP3_VisionSante\\donnees\\population.txt",
-            ';'
-        );
 
-        foreach (List<string> population in listePopulation)
+        /// <summary>
+        /// Lit les problèmes de santé depuis un fichier et crée les objets correspondants (blessures ou maladies).
+        /// </summary>
+        private static void _RepartirProbleme()
         {
-            int nas = int.Parse(population[0]); 
-            string nom = population[1];
-            string dateNaissance = population[2];
-            
-            switch (population.Count)
-            {
-                case TAILLE_LIGNE_CITOYEN:
-                    Citoyen citoyen = new Citoyen(nas, population[1], dateNaissance);
-                    _citoyens.Add(citoyen);
-                    break;
-                
-                case TAILLE_LIGNE_PROFESSIONNEL:
-                    string codePS = population[3];
-                    string titreProfessionnel = population[4];
+            List<List<string>> listeProblemes = Utilitaires.ChargerFichier(_CHEMIN_FICHIER_PROBLEMES, _SEPARATEUR_FICHIER_DONNEES);
 
-                    Professionnel professionnel = new Professionnel(nas, nom, dateNaissance, codePS, titreProfessionnel);
-                    _professionnels.Add(professionnel);
-                    break;
+            foreach (List<string> probleme in listeProblemes)
+            {
+                if (probleme.Count != _TAILLE_LIGNE_MALADIE && probleme.Count != _TAILLE_LIGNE_BLESSURE) continue;
+
+                (int nas, string type, string dateDebut, string dateFin, string description) =
+                    (int.Parse(probleme[0]), probleme[1], probleme[2], probleme[3], probleme[4]);
+
+                switch (probleme.Count)
+                {
+                    case _TAILLE_LIGNE_BLESSURE:
+                        _blessures.Add(new Blessure(nas, type, dateDebut, dateFin, description));
+                        break;
+
+                    case _TAILLE_LIGNE_MALADIE:
+                        int stade = int.Parse(probleme[5]);
+                        _maladies.Add(new Maladie(nas, type, dateDebut, dateFin, description, stade));
+                        break;
+                }
             }
         }
-    }
 
-    private static void ProfilCitoyen()
-    {
-        Utilitaires.EnTete();
-        
-        Console.Write("NAS du citoyen désiré: ");
-        int NAS = int.Parse(Console.ReadLine());
-
-        foreach (Citoyen citoyen in _citoyens)
+        /// <summary>
+        /// Lit les données de la population et crée des objets Citoyen ou Professionnel.
+        /// </summary>
+        private static void _RepartirPopulation()
         {
-            if (citoyen.NAS == NAS)
+            List<List<string>> listePopulation = Utilitaires.ChargerFichier(_CHEMIN_FICHIER_POPULATION, _SEPARATEUR_FICHIER_DONNEES);
+
+            foreach (List<string> population in listePopulation)
             {
-                citoyen.AfficherSommaire();
-                break;
+                (int nas, string nom, string dateNaissance) =
+                (int.Parse(population[0]), population[1], population[2]);
+
+                switch (population.Count)
+                {
+                    case _TAILLE_LIGNE_CITOYEN:
+                        Citoyen citoyen = new Citoyen(nas, population[1], dateNaissance);
+                        _citoyens.Add(citoyen);
+                        break;
+
+                    case _TAILLE_LIGNE_PROFESSIONNEL:
+                        (string codePS, string titreProfessionnel) = (population[3], population[4]);
+                        Professionnel professionnel = new Professionnel(nas, nom, dateNaissance, codePS, titreProfessionnel);
+                        _professionnels.Add(professionnel);
+                        break;
+                }
             }
         }
-    }
 
-    private static void ProfilProfessionnelSante()
-    {
-        Utilitaires.EnTete();
-        
-        Console.Write("Code PS du professionnel désiré: ");
-        string codePS = Console.ReadLine();
-        //string codePS = ""
-
-
-        foreach (Professionnel professionnel in _professionnels)
+        /// <summary>
+        /// Affiche le profil détaillé d’un citoyen selon son NAS.
+        /// </summary>
+        private static void _ProfilCitoyen()
         {
-            if (professionnel.CodePS == codePS)
+            Utilitaires.EnTete();
+
+            Console.Write("NAS du citoyen désiré: ");
+            string? nasStr = Console.ReadLine();
+
+            if (nasStr is string)
             {
-                professionnel.AfficherSommaire();
-                break;
+                int NAS = int.Parse(nasStr);
+
+                foreach (Citoyen citoyen in _citoyens)
+                {
+                    if (citoyen.NAS == NAS)
+                    {
+                        citoyen.AfficherSommaire();
+                        break;
+                    }
+                }
             }
         }
-        
-        Utilitaires.Pause();
+
+        /// <summary>
+        /// Affiche le profil détaillé d’un professionnel de la santé selon son code PS.
+        /// </summary>
+        private static void _ProfilProfessionnelSante()
+        {
+            Utilitaires.EnTete();
+
+            Console.Write("Code PS du professionnel désiré: ");
+            string? codePsStr = Console.ReadLine();
+
+            if (codePsStr is string)
+            {
+                foreach (Professionnel professionnel in _professionnels)
+                {
+                    if (professionnel.CodePS == codePsStr)
+                    {
+                        professionnel.AfficherSommaire();
+                        break;
+                    }
+                }
+            }
+
+            Utilitaires.Pause();
+        }
     }
 }

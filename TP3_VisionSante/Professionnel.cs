@@ -1,29 +1,28 @@
-﻿namespace Tp3_VisionSante;
+﻿// ----------------------
+// Professionnel.cs
+// Ubert Guertin
+// TP3 Vision Santé
+// 2025-04-17
+// ----------------------
 
-internal class Professionnel
+namespace TP3_VisionSante;
+
+internal class Professionnel : Citoyen
 {
-    private int? NAS { get; set; }
-    private string? Nom { get; set; }
-    private string? DateNaissance { get; set; }
     public string? CodePS { get; set; }
     private string? TitreProfessionnel { get; set; }
 
     public List<Citoyen> Patients { get; set; } = new List<Citoyen>();
-    public List<RendezVous> RendezVous_ { get; set; } = new List<RendezVous>();
-    public List<Hospitalisation> Hospitalisations { get; set; } = new List<Hospitalisation>();
 
     public List<Intervention> Interventions { get; set; } = new List<Intervention> { };
 
-    public Professionnel(int nas, string nom, string dateNaissance, string codePS, string titreProfessionnel)
+    public Professionnel(int nas, string nom, string dateNaissance, string codePS, string titreProfessionnel) : base(nas, nom, dateNaissance)
     {
-        NAS = nas;
-        Nom = nom;
-        DateNaissance = dateNaissance;
         CodePS = codePS;
         TitreProfessionnel = titreProfessionnel;
     }
 
-    public void AfficherSommaire()
+    public override void AfficherSommaire()
     {
         Utilitaires.ViderEcran();
         Utilitaires.EnTete();
@@ -43,8 +42,6 @@ internal class Professionnel
         menuPs.AjouterOption(new MenuItem('P', "Patients", AfficherPatients));
         menuPs.AjouterOption(new MenuItem('I', "Interventions", AfficherInterventions));
         menuPs.SaisirOption();
-
-        Utilitaires.Pause();
     }
 
     private void AfficherPatients()
@@ -62,7 +59,7 @@ internal class Professionnel
 
         foreach (Citoyen patient in Patients)
         {
-            patient.AfficherCaracteristiques(10);
+            patient.AfficherCaracteristiques();
         }
     }
 

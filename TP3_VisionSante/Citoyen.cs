@@ -1,9 +1,9 @@
-﻿namespace Tp3_VisionSante;
+﻿namespace TP3_VisionSante;
 internal class Citoyen
 {
     public int? NAS { get; set; }
     public string Nom { get; set; }
-    private string DateNaissance { get; set; }
+    protected string DateNaissance { get; set; }
     
     public List<Blessure> Blessures { get; set; } = new List<Blessure>();
     public List<Maladie> Maladies { get; set; } = new List<Maladie>();
@@ -19,9 +19,9 @@ internal class Citoyen
         DateNaissance = dateNaissance;
     }
 
-    public void AfficherCaracteristiques(int nbInter)
+    public void AfficherCaracteristiques()
     {
-        Console.WriteLine($"{Nom,-30}{NAS,5}{DateNaissance,12}{nbInter,5}");
+        Console.WriteLine($"{Nom,-30}{NAS,5}{DateNaissance,12}{Hospitalisations.Count+RendezVous_.Count,5}");
     }
 
     public DateTime RecupererDateNaissance()
@@ -30,7 +30,7 @@ internal class Citoyen
         return new DateTime(int.Parse(dn[0]), int.Parse(dn[1]), int.Parse(dn[2]));
     }
     
-    public void AfficherSommaire()
+    public virtual void AfficherSommaire()
     {
         Utilitaires.EnTete();
         
@@ -90,14 +90,11 @@ internal class Citoyen
 
     public void AfficherBlessures()
     {
-        Console.WriteLine($"\n\nBlessures de {Nom}:\n");
-        Console.WriteLine($"{"Type",-20}{"Début",-15}{"Guérison",-15}{"Description",-20}");
-        Console.WriteLine("_________________________________________________________________");
-
-        foreach (Blessure blessure in Blessures)
-        {
-            blessure.Afficher();
-        }
+        Utilitaires.AfficherTableau<Blessure>(
+            "Blessures",
+            Nom,
+            $"{"Type",-20}{"Début",-15}{"Guérison",-15}{"Description",-20}",
+            Blessures);
     }
     public void AfficherMaladies()
     {
