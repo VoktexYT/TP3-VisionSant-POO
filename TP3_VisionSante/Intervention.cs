@@ -16,33 +16,24 @@ internal abstract class Intervention : Utilitaires.MethodeAfficherObligatoire
 
     public string DateStr { get; set; }
 
-    public Intervention(int nas, string codePS, string etablissement, string date)
+    public string PatientNom { get; set; }
+    private List<Citoyen> Patients;
+
+    public Intervention(int nas, string codePS, string etablissement, string date, List<Citoyen> patients)
     {
         NAS = nas;
         CodePS = codePS;
         Etablissement = etablissement;
         DateStr = date;
-
-        string[] d = date.Split("-");
-        Date = new DateTime(int.Parse(d[0]), int.Parse(d[1]), int.Parse(d[2]));
+        Patients = patients;
+        
+        RecupererNomPatient();
+        RecupererFormatDate();
     }
 
     public virtual void Afficher()
     {
         Console.WriteLine($"{NAS} {CodePS} {Etablissement} {DateStr}");
-    }
-
-    public string RecupererPatientNom(List<Citoyen> patients)
-    {
-        foreach (Citoyen patient in patients)
-        {
-            if (patient.NAS == NAS)
-            {
-                return patient.Nom;
-            }
-        }
-
-        return "";
     }
 
     public void AfficherProfessionnel(List<Citoyen> patients)
@@ -52,6 +43,24 @@ internal abstract class Intervention : Utilitaires.MethodeAfficherObligatoire
             if (patient.NAS == NAS)
             {
                 Console.WriteLine($"{patient.Nom,-30}{NAS,-10}{DateStr,-12}{Etablissement,-20}");
+            }
+        }
+    }
+    
+    private void RecupererFormatDate()
+    {
+        string[] d = DateStr.Split("-");
+        Date = new DateTime(int.Parse(d[0]), int.Parse(d[1]), int.Parse(d[2]));
+    }
+
+    private void RecupererNomPatient()
+    {
+        foreach (Citoyen patient in Patients)
+        {
+            if (patient.NAS == NAS)
+            {
+                PatientNom = patient.Nom;
+                break;
             }
         }
     }

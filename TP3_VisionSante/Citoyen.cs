@@ -32,7 +32,7 @@ internal class Citoyen
     
     public virtual void AfficherSommaire()
     {
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
         
         Console.WriteLine("\n------------------------------------------------------------------");
         Console.WriteLine($"Nom: \t\t{Nom}");
@@ -53,7 +53,7 @@ internal class Citoyen
 
     public void AfficherSommaireProblemes()
     {
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
         Console.WriteLine($"\n\nProblèmes médicaux de {Nom}\n----------------------------------------\n");
         Console.WriteLine($"\t{Maladies.Count} maladies");
         Console.WriteLine($"\t{Blessures.Count} blessures");
@@ -72,7 +72,7 @@ internal class Citoyen
 
     public void AfficherSommaireRessources()
     {
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
         Console.WriteLine($"\n\nRessources utilisées par {Nom}\n----------------------------------------\n");
         Console.WriteLine($"\t{RendezVous_.Count} rendez-vous");
         Console.WriteLine($"\t{Hospitalisations.Count} hospitalisations");

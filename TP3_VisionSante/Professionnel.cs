@@ -25,7 +25,7 @@ internal class Professionnel : Citoyen
     public override void AfficherSommaire()
     {
         Utilitaires.ViderEcran();
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
 
         Console.WriteLine("\n------------------------------------------------------------------");
         Console.WriteLine($"Nom: \t\t{Nom}, {TitreProfessionnel}");
@@ -51,7 +51,7 @@ internal class Professionnel : Citoyen
 
         Utilitaires.ViderEcran();
 
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
         Console.WriteLine($"Patients de {Nom}");
         Console.WriteLine("------------------------------------");
         Console.WriteLine("{0,-30}{1,5}{2,12}{3,5}", "Nom", "NAS", "Naissance", " Nb Interv");
@@ -65,12 +65,12 @@ internal class Professionnel : Citoyen
 
     private void AfficherInterventions()
     {
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
         AfficherOptionTriIntervention();
         SaisirOptionTriIntervention();
         Utilitaires.ViderEcran();
 
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
 
         Console.WriteLine($"Interventions de {Nom}");
         Console.WriteLine("-----------------------------------------------------");
@@ -100,9 +100,9 @@ internal class Professionnel : Citoyen
                 Patients.Sort(TrierDecroissantPatientsNaissance);
                 break;
             case 'a':
-                Patients.Sort(TrierCroissantPatientsNAS); break;
+                Patients.Sort(TrierCroissantPatientsNas); break;
             case 'A':
-                Patients.Sort(TrierDecroissantPatientsNAS); break;
+                Patients.Sort(TrierDecroissantPatientsNas); break;
             case 'o':
                 Patients.Sort(TrierCroissantPatientsNom); break;
             case 'O':
@@ -134,10 +134,14 @@ internal class Professionnel : Citoyen
                 Interventions.Sort(TrierCroissantInterventionEtablissement); break;
             case 'E':
                 Interventions.Sort(TrierDecroissantInterventionEtablissement); break;
-            case 'n':
+            case 'a':
                 Interventions.Sort(TrierCroissantInterventionNas); break;
-            case 'N':
+            case 'A':
                 Interventions.Sort(TrierDecroissantInterventionNas); break;
+            case 'n':
+                Interventions.Sort(TrierCroissantInterventionNom); break;
+            case 'N':
+                Interventions.Sort(TrierDecroissantInterventionNom); break;
             case 's':
             case 'S':
                 Interventions.Sort(TrierDecroissantInterventionNas); break;
@@ -146,7 +150,7 @@ internal class Professionnel : Citoyen
 
     private void AfficherOptionTri()
     {
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
         Console.WriteLine($"\t\t\tPatients de {Nom} triés par\n");
         Console.WriteLine("\t\t\tn-naissance .:");
         Console.WriteLine("\t\t\tN-Naissance :.");
@@ -159,7 +163,7 @@ internal class Professionnel : Citoyen
 
     private void AfficherOptionTriIntervention()
     {
-        Utilitaires.EnTete();
+        Utilitaires.AfficherEnTete();
         Console.WriteLine($"\t\tInterventions de {Nom} triées par\n");
         Console.WriteLine("\t\td-date .:");
         Console.WriteLine("\t\tD-Date :.");
@@ -170,6 +174,16 @@ internal class Professionnel : Citoyen
         Console.WriteLine("\t\tn-nom .:");
         Console.WriteLine("\t\tN-Nom :.");
         Console.WriteLine("\t\ts-sans tri");
+    }
+
+    private int TrierCroissantInterventionNom(Intervention int1, Intervention int2)
+    {
+        return string.Compare(int1.PatientNom, int2.PatientNom);
+    }
+    
+    private int TrierDecroissantInterventionNom(Intervention int1, Intervention int2)
+    {
+        return string.Compare(int2.PatientNom, int1.PatientNom);
     }
 
     private int TrierCroissantInterventionDate(Intervention int1, Intervention int2)
@@ -211,11 +225,11 @@ internal class Professionnel : Citoyen
         return DateTime.Compare(patient2.RecupererDateNaissance(), patient1.RecupererDateNaissance());
     }
 
-    private int TrierCroissantPatientsNAS(Citoyen patient1, Citoyen patient2)
+    private int TrierCroissantPatientsNas(Citoyen patient1, Citoyen patient2)
     {
         return patient1.NAS > patient2.NAS ? 1 : patient1.NAS < patient2.NAS ? -1 : 0;
     }
-    private int TrierDecroissantPatientsNAS(Citoyen patient1, Citoyen patient2)
+    private int TrierDecroissantPatientsNas(Citoyen patient1, Citoyen patient2)
     {
         return patient1.NAS > patient2.NAS ? -1 : patient1.NAS < patient2.NAS ? 1 : 0;
     }

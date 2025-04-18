@@ -20,7 +20,7 @@ internal class Menu
 
     void Afficher()
     {
-        Utilitaires.Titre(Nom, _top);
+        Utilitaires.AfficherTitre(Nom, _top);
         
         foreach(MenuItem mi in Items)
         {

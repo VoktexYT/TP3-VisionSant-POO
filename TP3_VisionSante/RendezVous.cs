@@ -1,31 +1,31 @@
 // ----------------------
 // RendezVous.cs
 // Ubert Guertin
-// TP3 Vision Santé
+// TP3 Vision Santï¿½
 // 2025-04-17
 // ----------------------
 
 namespace TP3_VisionSante
 {
     /// <summary>
-    /// Représente un rendez-vous médical entre un citoyen et un professionnel de la santé.
-    /// Hérite de la classe <see cref="Intervention"/>.
+    /// Reprï¿½sente un rendez-vous mï¿½dical entre un citoyen et un professionnel de la santï¿½.
+    /// Hï¿½rite de la classe <see cref="Intervention"/>.
     /// </summary>
     internal class RendezVous : Intervention
     {
         /// <summary>
         /// Initialise une nouvelle instance de la classe <see cref="RendezVous"/>.
         /// </summary>
-        /// <param name="nas">Le numéro d’assurance sociale du citoyen.</param>
-        /// <param name="codePS">Le code du professionnel de la santé responsable du rendez-vous.</param>
-        /// <param name="etablissement">Le nom de l’établissement où se déroule le rendez-vous.</param>
+        /// <param name="nas">Le numï¿½ro dï¿½assurance sociale du citoyen.</param>
+        /// <param name="codePS">Le code du professionnel de la santï¿½ responsable du rendez-vous.</param>
+        /// <param name="etablissement">Le nom de lï¿½ï¿½tablissement oï¿½ se dï¿½roule le rendez-vous.</param>
         /// <param name="date">La date du rendez-vous.</param>
-        public RendezVous(int nas, string codePS, string etablissement, string date)
-            : base(nas, codePS, etablissement, date)
+        public RendezVous(int nas, string codePS, string etablissement, string date, List<Citoyen> patients)
+            : base(nas, codePS, etablissement, date, patients)
         { }
 
         /// <summary>
-        /// Affiche les détails du rendez-vous sous forme tabulaire dans la console.
+        /// Affiche les dï¿½tails du rendez-vous sous forme tabulaire dans la console.
         /// </summary>
         public override void Afficher()
         {

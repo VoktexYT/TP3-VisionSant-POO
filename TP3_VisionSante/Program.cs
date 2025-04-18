@@ -30,14 +30,23 @@ namespace TP3_VisionSante
         private const int _TAILLE_LIGNE_HOSPITALISATION = 6;
 
         // Chemins vers les fichiers de données
+        // private const string _CHEMIN_FICHIER_POPULATION =
+        //     "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\population.txt";
+        //
+        // private const string _CHEMIN_FICHIER_PROBLEMES =
+        //     "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\problemes.txt";
+        //
+        // private const string _CHEMIN_FICHIER_UTILISATIONS =
+        //     "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\utilisations.txt";
+        
         private const string _CHEMIN_FICHIER_POPULATION =
-            "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\population.txt";
+            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/population.txt";
 
         private const string _CHEMIN_FICHIER_PROBLEMES =
-            "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\problemes.txt";
+            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/problemes.txt";
 
         private const string _CHEMIN_FICHIER_UTILISATIONS =
-            "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\utilisations.txt";
+            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/utilisations.txt";
 
         private const char _SEPARATEUR_FICHIER_DONNEES = ';';
 
@@ -57,7 +66,7 @@ namespace TP3_VisionSante
         /// </summary>
         private static void AfficherMenuIntroduction()
         {
-            Utilitaires.EnTete();
+            Utilitaires.AfficherEnTete();
 
             Menu menu = new Menu("Profils offerts");
             menu.AjouterOption(new MenuItem('C', "Profil citoyen", _ProfilCitoyen));
@@ -233,25 +242,41 @@ namespace TP3_VisionSante
         private static void _RepartirUtilisations()
         {
             List<List<string>> listeUtilisations = Utilitaires.ChargerFichier(_CHEMIN_FICHIER_UTILISATIONS, _SEPARATEUR_FICHIER_DONNEES);
-
+            int barProgression = 0;
+            int tailleBarProgression = 10;
+            
+            
+            (int, int) positionCurseurInitial = Console.GetCursorPosition();
+            
+            // 2/34 = ?/10
+            // 
+            //
+            
             foreach (List<string> utilisation in listeUtilisations)
             {
+                Console.SetCursorPosition(positionCurseurInitial.Item1, positionCurseurInitial.Item2);
+                Console.WriteLine("          ");
+                Console.SetCursorPosition(positionCurseurInitial.Item1, positionCurseurInitial.Item2);
+                Console.WriteLine($"{barProgression * 100 / listeUtilisations.Count} %");
+
                 (int nas, string codePS, string etablissement, string date) =
                 (int.Parse(utilisation[0]), utilisation[1], utilisation[2], utilisation[3]);
 
                 switch (utilisation.Count)
                 {
                     case _TAILLE_LIGNE_RENDEZ_VOUS:
-                        RendezVous rendezVous = new RendezVous(nas, codePS, etablissement, date);
+                        RendezVous rendezVous = new RendezVous(nas, codePS, etablissement, date, _citoyens);
                         _rendezVous.Add(rendezVous);
                         break;
 
                     case _TAILLE_LIGNE_HOSPITALISATION:
                         (string dateFin, int noChambre) = (utilisation[4], int.Parse(utilisation[5]));
-                        Hospitalisation hospitalisation = new Hospitalisation(nas, codePS, etablissement, date, dateFin, noChambre);
+                        Hospitalisation hospitalisation = new Hospitalisation(nas, codePS, etablissement, date, _citoyens, dateFin, noChambre);
                         _hospitalisation.Add(hospitalisation);
                         break;
                 }
+
+                barProgression++;
             }
         }
 
@@ -316,7 +341,7 @@ namespace TP3_VisionSante
         /// </summary>
         private static void _ProfilCitoyen()
         {
-            Utilitaires.EnTete();
+            Utilitaires.AfficherEnTete();
 
             Console.Write("NAS du citoyen désiré: ");
             string? nasStr = Console.ReadLine();
@@ -341,7 +366,7 @@ namespace TP3_VisionSante
         /// </summary>
         private static void _ProfilProfessionnelSante()
         {
-            Utilitaires.EnTete();
+            Utilitaires.AfficherEnTete();
 
             Console.Write("Code PS du professionnel désiré: ");
             string? codePsStr = Console.ReadLine();
