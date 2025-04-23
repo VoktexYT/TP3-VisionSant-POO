@@ -1,5 +1,5 @@
 ﻿// ----------------------
-// Probleme.cs
+// Problemes.cs
 // Ubert Guertin
 // TP3 Vision Santé
 // 2025-04-17

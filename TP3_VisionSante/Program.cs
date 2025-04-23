@@ -40,13 +40,13 @@ namespace TP3_VisionSante
         //     "C:\\Users\\Ubert Guertin\\Desktop\\TP3-VisionSant-POO\\TP3_VisionSante\\donnees\\utilisations.txt";
         
         private const string _CHEMIN_FICHIER_POPULATION =
-            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/population.txt";
+            "C:\\utopia\\population.txt";
 
         private const string _CHEMIN_FICHIER_PROBLEMES =
-            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/problemes.txt";
+            "C:\\utopia\\problemes.txt";
 
         private const string _CHEMIN_FICHIER_UTILISATIONS =
-            "/home/voktex/RiderProjects/TP3-VisionSant-POO/TP3_VisionSante/donnees/utilisations.txt";
+            "C:\\utopia\\utilisations.txt";
 
         private const char _SEPARATEUR_FICHIER_DONNEES = ';';
 
@@ -71,8 +71,6 @@ namespace TP3_VisionSante
             Menu menu = new Menu("Profils offerts");
             menu.AjouterOption(new MenuItem('C', "Profil citoyen", _ProfilCitoyen));
             menu.AjouterOption(new MenuItem('P', "Profil professionnel de la santé", _ProfilProfessionnelSante));
-            menu.AjouterOption(new MenuItem('A', "Afficher professionnels de la santé", AfficherProfessionnel));
-            menu.AjouterOption(new MenuItem('B', "Afficher citoyens", AfficherCitoyen));
 
             menu.SaisirOption();
         }
@@ -104,32 +102,6 @@ namespace TP3_VisionSante
             _RepartirInterventionAvecProfessionnel();
 
             Utilitaires.ViderEcran();
-        }
-
-        /// <summary>
-        /// Affiche les codes PS de tous les professionnels.
-        /// </summary>
-        private static void AfficherProfessionnel()
-        {
-            foreach (var professionnel in _professionnels)
-            {
-                Console.Write($"[{professionnel.CodePS}] ");
-            }
-
-            Utilitaires.Pause();
-        }
-
-        /// <summary>
-        /// Affiche les NAS de tous les citoyens.
-        /// </summary>
-        private static void AfficherCitoyen()
-        {
-            foreach (var citoyen in _citoyens)
-            {
-                Console.Write($"[{citoyen.NAS,-4}] ");
-            }
-
-            Utilitaires.Pause();
         }
 
         /// <summary>

@@ -1,4 +1,12 @@
-﻿namespace TP3_VisionSante;
+﻿// ----------------------
+// MenuItem.cs
+// Ubert Guertin
+// TP3 Vision Santé
+// 2025-04-17
+// ----------------------
+
+
+namespace TP3_VisionSante;
 
 internal class MenuItem
 {

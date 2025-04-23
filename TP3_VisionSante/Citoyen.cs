@@ -1,4 +1,16 @@
-﻿namespace TP3_VisionSante;
+﻿// ----------------------
+// Citoyen.cs
+// Ubert Guertin
+// TP3 Vision Santé
+// 2025-04-17
+// ----------------------
+
+
+namespace TP3_VisionSante;
+
+/// <summary>
+/// Représente un citoyen avec des informations personnelles et un historique médical.
+/// </summary>
 internal class Citoyen
 {
     public int? NAS { get; set; }
@@ -12,6 +24,12 @@ internal class Citoyen
 
     public List<RendezVous> RendezVous_ { get; set; } = new List<RendezVous>();
 
+    /// <summary>
+    /// Initialise une nouvelle instance de la classe <see cref="Citoyen"/>.
+    /// </summary>
+    /// <param name="nas">Numéro d'assurance sociale du citoyen.</param>
+    /// <param name="nom">Nom du citoyen.</param>
+    /// <param name="dateNaissance">Date de naissance (format "yyyy-MM-dd").</param>
     public Citoyen(int nas, string nom, string dateNaissance)
     {
         NAS = nas;
@@ -19,17 +37,27 @@ internal class Citoyen
         DateNaissance = dateNaissance;
     }
 
+    /// <summary>
+    /// Affiche un résumé des caractéristiques du citoyen.
+    /// </summary>
     public void AfficherCaracteristiques()
     {
         Console.WriteLine($"{Nom,-30}{NAS,5}{DateNaissance,12}{Hospitalisations.Count+RendezVous_.Count,5}");
     }
 
+    /// <summary>
+    /// Retourne la date de naissance du citoyen en tant qu'objet <see cref="DateTime"/>.
+    /// </summary>
+    /// <returns>Date de naissance en tant que DateTime.</returns>
     public DateTime RecupererDateNaissance()
     {
         string[] dn = DateNaissance.Split("-");
         return new DateTime(int.Parse(dn[0]), int.Parse(dn[1]), int.Parse(dn[2]));
     }
-    
+
+    /// <summary>
+    /// Affiche un sommaire complet du citoyen, incluant ses problèmes et ses ressources médicales.
+    /// </summary>
     public virtual void AfficherSommaire()
     {
         Utilitaires.AfficherEnTete();
@@ -51,6 +79,9 @@ internal class Citoyen
         menuCitoyen.SaisirOption();
     }
 
+    /// <summary>
+    /// Affiche un sommaire des problèmes médicaux du citoyen (blessures et maladies).
+    /// </summary>
     public void AfficherSommaireProblemes()
     {
         Utilitaires.AfficherEnTete();
@@ -70,6 +101,9 @@ internal class Citoyen
         Utilitaires.ViderEcran();
     }
 
+    /// <summary>
+    /// Affiche un sommaire des ressources médicales utilisées (rendez-vous et hospitalisations).
+    /// </summary>
     public void AfficherSommaireRessources()
     {
         Utilitaires.AfficherEnTete();
@@ -88,6 +122,9 @@ internal class Citoyen
         Utilitaires.ViderEcran();
     }
 
+    /// <summary>
+    /// Affiche la liste des blessures du citoyen.
+    /// </summary>
     public void AfficherBlessures()
     {
         Utilitaires.AfficherTableau<Blessure>(
@@ -96,6 +133,11 @@ internal class Citoyen
             $"{"Type",-20}{"Début",-15}{"Guérison",-15}{"Description",-20}",
             Blessures);
     }
+
+
+    /// <summary>
+    /// Affiche la liste des maladies du citoyen.
+    /// </summary>
     public void AfficherMaladies()
     {
         Console.WriteLine($"\n\nMaladies de {Nom}:\n");
@@ -107,12 +149,19 @@ internal class Citoyen
             maladie.Afficher();
         }
     }
+
+    /// <summary>
+    /// Affiche toutes les maladies et blessures du citoyen.
+    /// </summary>
     public void AfficherTousProblemes()
     {
         AfficherBlessures();
         AfficherMaladies();
     }
 
+    /// <summary>
+    /// Affiche la liste des rendez-vous du citoyen.
+    /// </summary>
     public void AfficherRendezVous()
     {
         Console.WriteLine($"\n\nRendez-vous de {Nom}:\n");
@@ -124,6 +173,10 @@ internal class Citoyen
             rendezVous.Afficher();
         }
     }
+
+    /// <summary>
+    /// Affiche la liste des hospitalisations du citoyen.
+    /// </summary>
     public void AfficherHospitalisations()
     {
         Console.WriteLine($"\n\nHospitalisations de {Nom}:\n");
@@ -135,6 +188,11 @@ internal class Citoyen
             hospitalisation.Afficher();
         }
     }
+
+
+    /// <summary>
+    /// Affiche toutes les ressources médicales utilisées par le citoyen (rendez-vous et hospitalisations).
+    /// </summary>
     public void AfficherToutesRessources()
     {
         AfficherRendezVous();

@@ -1,4 +1,12 @@
-﻿namespace TP3_VisionSante
+﻿// ----------------------
+// Utilitaires.cs
+// Ubert Guertin
+// TP3 Vision Santé
+// 2025-04-17
+// ----------------------
+
+
+namespace TP3_VisionSante
 {
     /// <summary>
     /// Fournit des méthodes utilitaires pour l'affichage, la gestion de l'écran et le chargement de fichiers.

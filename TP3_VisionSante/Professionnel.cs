@@ -16,12 +16,24 @@ internal class Professionnel : Citoyen
 
     public List<Intervention> Interventions { get; set; } = new List<Intervention> { };
 
+    /// <summary>
+    /// Initialise une nouvelle instance de la classe <see cref="Professionnel"/>.
+    /// </summary>
+    /// <param name="nas">Numéro d'assurance sociale du professionnel.</param>
+    /// <param name="nom">Nom du professionnel.</param>
+    /// <param name="dateNaissance">Date de naissance du professionnel.</param>
+    /// <param name="codePS">Code professionnel de santé.</param>
+    /// <param name="titreProfessionnel">Titre professionnel du professionnel.</param>
     public Professionnel(int nas, string nom, string dateNaissance, string codePS, string titreProfessionnel) : base(nas, nom, dateNaissance)
     {
         CodePS = codePS;
         TitreProfessionnel = titreProfessionnel;
     }
 
+    /// <summary>
+    /// Affiche un sommaire des informations du professionnel incluant
+    /// ses patients et interventions, avec options de tri.
+    /// </summary>
     public override void AfficherSommaire()
     {
         Utilitaires.ViderEcran();
@@ -44,6 +56,10 @@ internal class Professionnel : Citoyen
         menuPs.SaisirOption();
     }
 
+    /// <summary>
+    /// Affiche les informations détaillées sur les patients associés.
+    /// Permet de trier selon divers critères.
+    /// </summary>
     private void AfficherPatients()
     {
         AfficherOptionTri();
@@ -63,6 +79,10 @@ internal class Professionnel : Citoyen
         }
     }
 
+    /// <summary>
+    /// Affiche les interventions réalisées par le professionnel.
+    /// Permet également le tri.
+    /// </summary>
     private void AfficherInterventions()
     {
         Utilitaires.AfficherEnTete();
@@ -83,7 +103,9 @@ internal class Professionnel : Citoyen
         }
     }
 
-
+    /// <summary>
+    /// Permet à l'utilisateur de sélectionner une option de tri pour les patients.
+    /// </summary>
     private void SaisirOptionTri()
     {
         ConsoleKeyInfo keyInfo;
@@ -113,6 +135,10 @@ internal class Professionnel : Citoyen
         }
     }
 
+
+    /// <summary>
+    /// Permet à l'utilisateur de sélectionner une option de tri pour les interventions.
+    /// </summary>
     private void SaisirOptionTriIntervention()
     {
         ConsoleKeyInfo keyInfo;
@@ -148,6 +174,10 @@ internal class Professionnel : Citoyen
         }
     }
 
+
+    /// <summary>
+    /// Affiche les options de tri pour les patients.
+    /// </summary>
     private void AfficherOptionTri()
     {
         Utilitaires.AfficherEnTete();
@@ -161,6 +191,9 @@ internal class Professionnel : Citoyen
         Console.WriteLine("\t\t\ts-sans tri");
     }
 
+    /// <summary>
+    /// Affiche les options de tri pour les interventions.
+    /// </summary>
     private void AfficherOptionTriIntervention()
     {
         Utilitaires.AfficherEnTete();
@@ -176,46 +209,42 @@ internal class Professionnel : Citoyen
         Console.WriteLine("\t\ts-sans tri");
     }
 
+
+    // Méthodes de tri des interventions (par nom, date, établissement, NAS)
     private int TrierCroissantInterventionNom(Intervention int1, Intervention int2)
     {
         return string.Compare(int1.PatientNom, int2.PatientNom);
     }
-    
     private int TrierDecroissantInterventionNom(Intervention int1, Intervention int2)
     {
         return string.Compare(int2.PatientNom, int1.PatientNom);
     }
-
     private int TrierCroissantInterventionDate(Intervention int1, Intervention int2)
     {
         return DateTime.Compare(int1.Date, int2.Date);
     }
-
     private int TrierDecroissantInterventionDate(Intervention int1, Intervention int2)
     {
         return DateTime.Compare(int2.Date, int1.Date);
     }
-
     private int TrierCroissantInterventionEtablissement(Intervention int1, Intervention int2)
     {
         return string.Compare(int1.Etablissement, int2.Etablissement);
     }
-
     private int TrierDecroissantInterventionEtablissement(Intervention int1, Intervention int2)
     {
         return string.Compare(int2.Etablissement, int1.Etablissement);
     }
-
     private int TrierCroissantInterventionNas(Intervention int1, Intervention int2)
     {
         return int1.NAS > int2.NAS ? 1 : int1.NAS < int2.NAS ? -1 : 0;
     }
-
     private int TrierDecroissantInterventionNas(Intervention int1, Intervention int2)
     {
         return int1.NAS > int2.NAS ? -1 : int1.NAS < int2.NAS ? 1 : 0;
     }
 
+    // Méthodes de tri des patients (par naissance, NAS, nom)
     private int TrierCroissantPatientsNaissance(Citoyen patient1, Citoyen patient2)
     {
         return DateTime.Compare(patient1.RecupererDateNaissance(), patient2.RecupererDateNaissance());
@@ -224,7 +253,6 @@ internal class Professionnel : Citoyen
     {
         return DateTime.Compare(patient2.RecupererDateNaissance(), patient1.RecupererDateNaissance());
     }
-
     private int TrierCroissantPatientsNas(Citoyen patient1, Citoyen patient2)
     {
         return patient1.NAS > patient2.NAS ? 1 : patient1.NAS < patient2.NAS ? -1 : 0;
